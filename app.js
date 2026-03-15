@@ -786,8 +786,10 @@ function onOpenChatListing() {
 
 async function onRegister(event) {
   event.preventDefault();
+  const formElement = event.currentTarget;
+  if (!(formElement instanceof HTMLFormElement)) return;
 
-  const form = new FormData(event.currentTarget);
+  const form = new FormData(formElement);
   const payload = {
     role: String(form.get("role") || "").trim(),
     name: String(form.get("name") || "").trim(),
@@ -810,7 +812,7 @@ async function onRegister(event) {
     });
     throwIfError(error, "Could not register.");
 
-    event.currentTarget.reset();
+    formElement.reset();
 
     if (!data.session) {
       toast("Account created. Check your email to confirm it, then log in.");
@@ -826,8 +828,10 @@ async function onRegister(event) {
 
 async function onLogin(event) {
   event.preventDefault();
+  const formElement = event.currentTarget;
+  if (!(formElement instanceof HTMLFormElement)) return;
 
-  const form = new FormData(event.currentTarget);
+  const form = new FormData(formElement);
   const payload = {
     email: String(form.get("email") || "").trim(),
     password: String(form.get("password") || "")
@@ -837,7 +841,7 @@ async function onLogin(event) {
     const { data, error } = await supabase.auth.signInWithPassword(payload);
     throwIfError(error, "Could not log in.");
 
-    event.currentTarget.reset();
+    formElement.reset();
     await bootstrap();
     toast(`Logged in as ${data.user.user_metadata?.name || data.user.email || "your account"}.`);
   } catch (error) {
@@ -895,13 +899,15 @@ function onImagePreviewClick(event) {
 
 async function onPostListing(event) {
   event.preventDefault();
+  const formElement = event.currentTarget;
+  if (!(formElement instanceof HTMLFormElement)) return;
 
   if (!state.currentUser) {
     toast("Log in first to post a listing.");
     return;
   }
 
-  const form = new FormData(event.currentTarget);
+  const form = new FormData(formElement);
   const payload = {
     title: String(form.get("title") || "").trim(),
     category: String(form.get("category") || "").trim(),
@@ -933,7 +939,7 @@ async function onPostListing(event) {
     state.selectedImageIndex = 0;
     state.draftImages = [];
     if (el.imagesInput) el.imagesInput.value = "";
-    event.currentTarget.reset();
+    formElement.reset();
     el.postNote.textContent = "Listing published to the shared marketplace.";
     await bootstrap();
     toast("Listing published.");
