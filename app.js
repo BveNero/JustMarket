@@ -96,13 +96,8 @@ const el = {
   loginForm: document.getElementById("loginForm"),
   authSection: document.getElementById("authSection"),
   dashboardSection: document.getElementById("dashboardSection"),
-  accountGreeting: document.getElementById("accountGreeting"),
-  accountMeta: document.getElementById("accountMeta"),
   dashboardProfileLink: document.getElementById("dashboardProfileLink"),
   logoutBtn: document.getElementById("logoutBtn"),
-  savedCount: document.getElementById("savedCount"),
-  myListingCount: document.getElementById("myListingCount"),
-  threadCount: document.getElementById("threadCount"),
   savedGrid: document.getElementById("savedGrid"),
   myListingsGrid: document.getElementById("myListingsGrid"),
   threadList: document.getElementById("threadList"),
@@ -447,12 +442,6 @@ function renderSessionState() {
   const myListings = state.listings
     .filter((listing) => listing.sellerId === user.id)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-  el.accountGreeting.textContent = `Welcome, ${user.name}`;
-  el.accountMeta.textContent = `${roleLabel(user.role)} in ${user.location}. Your account lets you post ads, save listings, and chat across the shared JustMarket marketplace.`;
-  el.savedCount.textContent = String(savedListings.length);
-  el.myListingCount.textContent = String(myListings.length);
-  el.threadCount.textContent = String(threads.length);
 
   renderSavedGrid(savedListings);
   renderMyListings(myListings);
