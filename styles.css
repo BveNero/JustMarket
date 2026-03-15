@@ -862,6 +862,22 @@ textarea:focus {
   align-items: start;
 }
 
+.oauth-stack {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.oauth-actions {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.oauth-intro {
+  margin: 0;
+}
+
 .auth-form,
 .sell-form {
   display: grid;
@@ -1146,6 +1162,10 @@ textarea:focus {
   .section-head h2,
   h1 {
     max-width: 100%;
+  }
+
+  .oauth-actions {
+    grid-template-columns: 1fr;
   }
 }
 

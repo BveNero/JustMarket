@@ -89,6 +89,8 @@ const el = {
   sellerStats: document.getElementById("sellerStats"),
   favoriteBtn: document.getElementById("favoriteBtn"),
   contactSellerBtn: document.getElementById("contactSellerBtn"),
+  googleSignInBtn: document.getElementById("googleSignInBtn"),
+  appleSignInBtn: document.getElementById("appleSignInBtn"),
   registerForm: document.getElementById("registerForm"),
   loginForm: document.getElementById("loginForm"),
   authSection: document.getElementById("authSection"),
@@ -130,6 +132,8 @@ el.listingGrid?.addEventListener("click", onListingGridClick);
 el.detailThumbRow?.addEventListener("click", onThumbRowClick);
 el.favoriteBtn?.addEventListener("click", () => void toggleFavorite(state.selectedListingId));
 el.contactSellerBtn?.addEventListener("click", () => void openChatForSelectedListing());
+el.googleSignInBtn?.addEventListener("click", () => void onOAuthSignIn("google"));
+el.appleSignInBtn?.addEventListener("click", () => void onOAuthSignIn("apple"));
 el.registerForm?.addEventListener("submit", onRegister);
 el.loginForm?.addEventListener("submit", onLogin);
 el.logoutBtn?.addEventListener("click", () => void onLogout());
@@ -849,6 +853,20 @@ async function onLogin(event) {
   }
 }
 
+async function onOAuthSignIn(provider) {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}${window.location.pathname}`
+      }
+    });
+    throwIfError(error, `Could not start ${provider} sign in.`);
+  } catch (error) {
+    toast(friendlyError(error, `Could not start ${provider} sign in.`));
+  }
+}
+
 async function onLogout() {
   try {
     const { error } = await supabase.auth.signOut();
@@ -1394,6 +1412,12 @@ function friendlyError(error, fallbackMessage = "Request failed.") {
   }
   if (message.includes("Email not confirmed")) {
     return "Check your email and confirm your account before logging in.";
+  }
+  if (message.includes("provider is not enabled") || message.includes("Unsupported provider")) {
+    return "That sign-in option is not configured in Supabase yet.";
+  }
+  if (message.includes("email rate limit exceeded") || message.includes("security purposes")) {
+    return "Email sign-in is rate-limited right now. Use Google or Apple instead.";
   }
   if (message.includes("User already registered")) {
     return "That email is already registered.";
