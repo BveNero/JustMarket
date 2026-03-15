@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: justmarket
+    runtime: python
+    plan: starter
+    region: ohio
+    buildCommand: PYTHONPYCACHEPREFIX=/tmp python3 -m py_compile server.py
+    startCommand: python3 server.py
+    healthCheckPath: /health
+    disk:
+      name: justmarket-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: JM_DB_PATH
+        value: /var/data/justmarket.db

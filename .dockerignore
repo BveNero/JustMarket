@@ -1,0 +1,6 @@
+.git
+__pycache__/
+.DS_Store
+justmarket.db
+*.db-shm
+*.db-wal

@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JustMarket | Buy and Sell Locally</title>
+    <meta
+      name="description"
+      content="JustMarket is a dark shared marketplace with user-created listings, image uploads, saved ads, and direct buyer-seller chat backed by a real database."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="#top" aria-label="JustMarket home">
+          <span class="brand-mark">JM</span>
+          <span class="brand-copy">
+            <strong>JustMarket</strong>
+            <span>Local classifieds for buyers and sellers</span>
+          </span>
+        </a>
+
+        <nav class="nav">
+          <a href="#marketplace">Marketplace</a>
+          <a href="#howItWorks">How It Works</a>
+          <a href="#account">Account</a>
+          <a href="#sell">Sell</a>
+        </nav>
+
+        <div class="top-actions">
+          <span class="session-badge" id="sessionBadge">Guest browsing</span>
+          <a class="button button-secondary" href="#account">Account</a>
+          <a class="button" href="#sell">Post Ad</a>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero">
+          <div class="hero-copy">
+            <p class="eyebrow">Shared marketplace with real user accounts</p>
+            <h1>Buy and sell locally with a marketplace that feels simple from the first click.</h1>
+            <p class="hero-text">
+              JustMarket starts clean and stays focused. Browse faster, trust listings faster, and move from search to chat with less friction.
+              Sellers can post image-rich ads into the shared marketplace, and buyers can save favorites and message directly from the listing view.
+            </p>
+
+            <div class="hero-actions">
+              <a class="button" href="#marketplace">Start Browsing</a>
+              <a class="button button-secondary" href="#account">Create Account</a>
+            </div>
+
+            <form class="hero-search" id="heroSearchForm">
+              <label class="hero-search-field hero-search-wide">
+                <span>Search listings</span>
+                <input id="heroSearchInput" type="text" placeholder="Phone, bike, apartment, sofa..." />
+              </label>
+              <label class="hero-search-field">
+                <span>Location</span>
+                <select id="heroLocationSelect"></select>
+              </label>
+              <button class="button" type="submit">Browse Ads</button>
+            </form>
+
+            <div class="hero-trust">
+              <span class="trust-chip">Real listing photos</span>
+              <span class="trust-chip">Direct buyer-seller chat</span>
+              <span class="trust-chip">Saved ads for return visits</span>
+            </div>
+          </div>
+
+          <div class="hero-panel">
+            <div class="hero-stats">
+              <article>
+                <span>Live listings</span>
+                <strong id="listingTotal">0</strong>
+              </article>
+              <article>
+                <span>Active sellers</span>
+                <strong id="sellerTotal">0</strong>
+              </article>
+              <article>
+                <span>Open chats</span>
+                <strong id="chatTotal">0</strong>
+              </article>
+            </div>
+
+            <div class="hero-callouts">
+              <div class="callout callout-blue">
+                <span>For buyers</span>
+                <strong>Search, save, and message</strong>
+                <small>Use filters, inspect listing details, and start a real chat with the seller.</small>
+              </div>
+              <div class="callout callout-orange">
+                <span>For sellers</span>
+                <strong>Upload images and post ads</strong>
+                <small>Create your own listing feed with photos, location, price, and condition.</small>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="discovery-section">
+          <article class="panel quick-start-card">
+            <div class="section-head compact-head">
+              <div>
+                <p class="eyebrow">Start fast</p>
+                <h2>Make the first move obvious for new customers.</h2>
+              </div>
+            </div>
+
+            <div class="quick-links">
+              <a class="quick-link-card" href="#marketplace">
+                <span class="quick-step">01</span>
+                <strong>Browse recent ads</strong>
+                <p>Jump straight into the marketplace feed and search by location or keyword.</p>
+              </a>
+              <a class="quick-link-card" href="#account">
+                <span class="quick-step">02</span>
+                <strong>Create an account</strong>
+                <p>Register in seconds to save ads, start chats, and manage your own posts.</p>
+              </a>
+              <a class="quick-link-card" href="#sell">
+                <span class="quick-step">03</span>
+                <strong>Post with photos</strong>
+                <p>Upload images, set a price, and publish a clean listing without extra clutter.</p>
+              </a>
+            </div>
+          </article>
+
+          <article class="panel browse-categories-card">
+            <div class="section-head compact-head">
+              <div>
+                <p class="eyebrow">Browse by category</p>
+                <h2>Popular entry points for shoppers.</h2>
+              </div>
+            </div>
+            <div class="category-showcase" id="quickCategoryGrid"></div>
+          </article>
+        </section>
+
+        <section class="market-section" id="marketplace">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Marketplace</p>
+                <h2>Fresh user-created listings with faster browsing and cleaner decision-making.</h2>
+              </div>
+              <p class="section-copy">
+              The feed below pulls from the shared JustMarket database, with quick filters and a clearer detail view.
+              </p>
+            </div>
+
+          <div class="market-layout">
+            <aside class="panel filters-panel">
+              <div class="panel-head">
+                <h3>Filters</h3>
+                <button class="button button-ghost mini-button" id="clearFiltersBtn" type="button">Reset</button>
+              </div>
+
+              <label class="field">
+                <span>Search</span>
+                <input id="searchInput" type="text" placeholder="Search title, category, seller, or keyword" />
+              </label>
+
+              <label class="field">
+                <span>Location</span>
+                <select id="locationFilter"></select>
+              </label>
+
+              <label class="field">
+                <span>Sort by</span>
+                <select id="sortSelect">
+                  <option value="recent">Most recent</option>
+                  <option value="price-low">Price: low to high</option>
+                  <option value="price-high">Price: high to low</option>
+                </select>
+              </label>
+
+              <div class="filter-group">
+                <span class="field-label">Categories</span>
+                <div class="chip-row" id="categoryRow"></div>
+              </div>
+
+              <div class="filter-group">
+                <span class="field-label">Condition</span>
+                <div class="chip-row" id="conditionRow"></div>
+              </div>
+
+              <label class="toggle-row">
+                <input id="savedOnlyToggle" type="checkbox" />
+                <span>Only show saved ads</span>
+              </label>
+
+              <div class="helper-card">
+                <strong>What changed</strong>
+                <p>No demo accounts, no seeded posts, and no fake chat messages are kept in the new version.</p>
+              </div>
+            </aside>
+
+            <section class="panel listings-panel">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Browse ads</p>
+                  <h3>Marketplace feed</h3>
+                  <p class="market-summary" id="marketSummary">All listings, newest first.</p>
+                </div>
+                <span class="listing-count" id="listingCount">0 listings</span>
+              </div>
+
+              <div class="listing-grid" id="listingGrid"></div>
+            </section>
+
+            <aside class="panel detail-panel">
+              <div id="detailEmpty" class="detail-empty">
+                <h3>No listing selected</h3>
+                <p>Post a new ad or choose an existing listing to inspect the full details here.</p>
+              </div>
+
+              <div id="detailContent" hidden>
+                <div class="detail-visual tone-blue" id="detailVisual">
+                  <img id="detailImage" alt="Selected listing" hidden />
+                  <span class="detail-fallback" id="detailCategoryLabel">Listing</span>
+                </div>
+
+                <div class="thumb-row" id="detailThumbRow"></div>
+
+                <div class="detail-top">
+                  <span class="pill" id="detailBadge">Category</span>
+                  <button class="button button-secondary mini-button" id="favoriteBtn" type="button">Save</button>
+                </div>
+
+                <h3 class="detail-title" id="detailTitle">Listing title</h3>
+                <strong class="detail-price" id="detailPrice">$0</strong>
+                <div class="detail-meta" id="detailMeta"></div>
+                <p class="detail-description" id="detailDescription"></p>
+
+                <div class="seller-card">
+                  <div>
+                    <span class="seller-label">Seller</span>
+                    <strong id="sellerName">Seller name</strong>
+                  </div>
+                  <div class="seller-info">
+                    <span id="sellerRole">Customer account</span>
+                    <span id="sellerLocation">Location</span>
+                    <span id="sellerStats">0 active ads</span>
+                  </div>
+                </div>
+
+                <div class="detail-actions">
+                  <button class="button" id="contactSellerBtn" type="button">Open Chat</button>
+                  <a class="button button-ghost" href="#account">Open Account</a>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="workflow-section" id="howItWorks">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">How it works</p>
+              <h2>Create accounts, post listings with images, and chat directly from the same page.</h2>
+            </div>
+          </div>
+
+          <div class="workflow-grid">
+            <article class="panel step-card">
+              <span class="step-index">01</span>
+              <h3>Create accounts</h3>
+              <p>Register buyer and seller accounts with real names, emails, and locations stored in the shared marketplace database.</p>
+            </article>
+            <article class="panel step-card">
+              <span class="step-index">02</span>
+              <h3>Post ads with photos</h3>
+              <p>Sellers upload listing images, set price and condition, and publish ads into the marketplace feed.</p>
+            </article>
+            <article class="panel step-card">
+              <span class="step-index">03</span>
+              <h3>Save and chat</h3>
+              <p>Customers can save ads, open a chat from the listing detail, and both sides can reply from the account area.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="account-section" id="account">
+          <div class="section-head">
+            <div>
+              <p class="eyebrow">Account area</p>
+              <h2>Register, log in, manage your listings, and hold real chat conversations.</h2>
+            </div>
+            <p class="section-copy">
+              Accounts, listings, favorites, and chats are now stored in the shared JustMarket backend and database.
+            </p>
+          </div>
+
+          <div class="account-layout">
+            <div class="panel auth-panel" id="authSection">
+              <div class="auth-grid">
+                <form class="auth-form" id="registerForm">
+                  <div class="panel-head">
+                    <h3>Create account</h3>
+                  </div>
+
+                  <label class="field">
+                    <span>Account type</span>
+                    <select name="role" required>
+                      <option value="">Select one</option>
+                      <option value="company">Company</option>
+                      <option value="customer">Customer</option>
+                    </select>
+                  </label>
+
+                  <label class="field">
+                    <span>Name or company</span>
+                    <input name="name" type="text" placeholder="West Village Rentals" required />
+                  </label>
+
+                  <label class="field">
+                    <span>Email</span>
+                    <input name="email" type="email" placeholder="you@example.com" required />
+                  </label>
+
+                  <label class="field">
+                    <span>Password</span>
+                    <input name="password" type="password" placeholder="Create password" required />
+                  </label>
+
+                  <label class="field">
+                    <span>Location</span>
+                    <input name="location" type="text" placeholder="Brooklyn, NY" required />
+                  </label>
+
+                  <button class="button" type="submit">Register</button>
+                </form>
+
+                <form class="auth-form" id="loginForm">
+                  <div class="panel-head">
+                    <h3>Log in</h3>
+                  </div>
+
+                  <label class="field">
+                    <span>Email</span>
+                    <input name="email" type="email" placeholder="you@example.com" required />
+                  </label>
+
+                  <label class="field">
+                    <span>Password</span>
+                    <input name="password" type="password" placeholder="Your password" required />
+                  </label>
+
+                  <button class="button button-secondary" type="submit">Log In</button>
+
+                  <div class="helper-card compact">
+                    <strong>No demo users</strong>
+                    <p>Register at least two accounts if you want to test buyer and seller chat from different sessions or devices.</p>
+                  </div>
+                </form>
+              </div>
+            </div>
+
+            <div class="dashboard-wrap" id="dashboardSection" hidden>
+              <div class="panel dashboard-panel">
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Logged in account</p>
+                    <h3 id="accountGreeting">Welcome</h3>
+                  </div>
+                  <button class="button button-ghost mini-button" id="logoutBtn" type="button">Log Out</button>
+                </div>
+
+                <p class="section-copy" id="accountMeta"></p>
+
+                <div class="account-stats">
+                  <article>
+                    <span>Saved ads</span>
+                    <strong id="savedCount">0</strong>
+                  </article>
+                  <article>
+                    <span>Your listings</span>
+                    <strong id="myListingCount">0</strong>
+                  </article>
+                  <article>
+                    <span>Your chats</span>
+                    <strong id="threadCount">0</strong>
+                  </article>
+                </div>
+
+                <div class="dashboard-grid">
+                  <section class="subpanel">
+                    <div class="panel-head">
+                      <h4>Saved ads</h4>
+                    </div>
+                    <div class="mini-grid" id="savedGrid"></div>
+                  </section>
+
+                  <section class="subpanel">
+                    <div class="panel-head">
+                      <h4>My listings</h4>
+                    </div>
+                    <div class="mini-grid" id="myListingsGrid"></div>
+                  </section>
+                </div>
+
+                <section class="subpanel chat-panel">
+                  <div class="panel-head">
+                    <h4>Chats</h4>
+                  </div>
+
+                  <div class="chat-layout">
+                    <aside class="thread-list" id="threadList"></aside>
+
+                    <div class="chat-window">
+                      <div class="chat-empty" id="chatEmpty">
+                        Open a listing and press <strong>Open Chat</strong> to start a real conversation.
+                      </div>
+
+                      <div id="chatBox" hidden>
+                        <div class="chat-header">
+                          <div>
+                            <strong id="chatPartnerName">Conversation</strong>
+                            <p id="chatListingMeta">Listing</p>
+                          </div>
+                          <button class="button button-ghost mini-button" id="openChatListingBtn" type="button">Open Listing</button>
+                        </div>
+
+                        <div class="chat-messages" id="chatMessages"></div>
+
+                        <form class="chat-form" id="chatForm">
+                          <input id="chatInput" type="text" placeholder="Type your message..." required />
+                          <button class="button" type="submit">Send</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </div>
+
+            <div class="sell-column" id="sell">
+              <div class="panel sell-locked" id="sellLocked">
+                <h3>Log in to post an ad</h3>
+                <p>Create an account first. Once logged in, the listing form opens here with image upload support.</p>
+              </div>
+
+              <form class="panel sell-form" id="postForm" hidden>
+                <div class="panel-head">
+                  <div>
+                    <p class="eyebrow">Sell something</p>
+                    <h3>Post a new listing</h3>
+                  </div>
+                </div>
+
+                <div class="form-grid">
+                  <label class="field">
+                    <span>Title</span>
+                    <input name="title" type="text" placeholder="iPhone 15 Pro Max 256GB" required />
+                  </label>
+
+                  <label class="field">
+                    <span>Category</span>
+                    <select name="category" id="postCategorySelect" required></select>
+                  </label>
+
+                  <label class="field">
+                    <span>Price</span>
+                    <input name="price" type="number" min="0" step="1" placeholder="850" required />
+                  </label>
+
+                  <label class="field">
+                    <span>Condition</span>
+                    <select name="condition" required>
+                      <option value="">Select one</option>
+                      <option>New</option>
+                      <option>Used</option>
+                      <option>Refurbished</option>
+                    </select>
+                  </label>
+                </div>
+
+                <label class="field">
+                  <span>Location</span>
+                  <input name="location" type="text" placeholder="Queens, NY" required />
+                </label>
+
+                <label class="field">
+                  <span>Description</span>
+                  <textarea name="description" rows="5" placeholder="Describe the item, what is included, and the condition." required></textarea>
+                </label>
+
+                <label class="field">
+                  <span>Images</span>
+                  <input id="imagesInput" type="file" accept="image/*" multiple />
+                </label>
+
+                <div class="upload-note">Upload up to 4 images. They are stored with the listing in the shared JustMarket database.</div>
+                <div class="image-preview-grid" id="imagePreviewGrid"></div>
+
+                <button class="button" type="submit">Publish Listing</button>
+                <p class="form-note" id="postNote">No fake listings are added automatically. Your posts are the only posts shown.</p>
+              </form>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite"></div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
