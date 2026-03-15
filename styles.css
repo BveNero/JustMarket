@@ -1211,8 +1211,6 @@ textarea:focus {
 
 @media (max-width: 1180px) {
   .topbar,
-  .nav,
-  .top-actions,
   .hero-actions,
   .hero-search,
   .section-head,
@@ -1251,6 +1249,36 @@ textarea:focus {
     max-width: 100%;
   }
 
+  .topbar {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 14px 18px;
+  }
+
+  .nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+    grid-column: 1 / -1;
+    gap: 10px 16px;
+  }
+
+  .top-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .top-actions .button,
+  .top-actions .button-secondary,
+  .top-actions .button-ghost,
+  .top-actions .session-badge {
+    width: auto;
+    min-height: 40px;
+    padding: 0 14px;
+  }
+
   .profile-layout,
   .security-meta {
     grid-template-columns: 1fr;
@@ -1272,7 +1300,9 @@ textarea:focus {
 
   .topbar {
     top: 10px;
-    padding: 16px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px;
   }
 
   .hero {
@@ -1286,9 +1316,46 @@ textarea:focus {
     width: 100%;
   }
 
-  .top-actions,
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+  }
+
+  .brand-copy {
+    gap: 0;
+  }
+
+  .brand-copy strong {
+    font-size: 1rem;
+  }
+
+  .brand-copy span:last-child {
+    display: none;
+  }
+
+  .nav,
+  .top-actions {
+    width: auto;
+  }
+
   .nav {
-    width: 100%;
+    gap: 8px 14px;
+    font-size: 0.95rem;
+  }
+
+  .top-actions {
+    justify-content: flex-start;
+  }
+
+  .top-actions .button,
+  .top-actions .button-secondary,
+  .top-actions .button-ghost,
+  .top-actions .session-badge {
+    width: auto;
+    min-height: 36px;
+    padding: 0 12px;
+    font-size: 0.84rem;
   }
 
   .panel,
