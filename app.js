@@ -58,6 +58,7 @@ const el = {
   sellerTotal: document.getElementById("sellerTotal"),
   chatTotal: document.getElementById("chatTotal"),
   sessionBadge: document.getElementById("sessionBadge"),
+  profileLink: document.getElementById("profileLink"),
   heroSearchForm: document.getElementById("heroSearchForm"),
   heroSearchInput: document.getElementById("heroSearchInput"),
   heroLocationSelect: document.getElementById("heroLocationSelect"),
@@ -97,6 +98,7 @@ const el = {
   dashboardSection: document.getElementById("dashboardSection"),
   accountGreeting: document.getElementById("accountGreeting"),
   accountMeta: document.getElementById("accountMeta"),
+  dashboardProfileLink: document.getElementById("dashboardProfileLink"),
   logoutBtn: document.getElementById("logoutBtn"),
   savedCount: document.getElementById("savedCount"),
   myListingCount: document.getElementById("myListingCount"),
@@ -424,6 +426,8 @@ function renderSessionState() {
   }
 
   el.sessionBadge.textContent = user ? `${user.name} · ${roleLabel(user.role)}` : "Browse freely";
+  el.profileLink.hidden = !isLoggedIn;
+  el.dashboardProfileLink.hidden = !isLoggedIn;
   el.savedOnlyToggle.checked = state.filters.savedOnly;
   el.savedOnlyToggle.disabled = !isLoggedIn;
   el.authSection.hidden = isLoggedIn;

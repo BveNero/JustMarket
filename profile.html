@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JustMarket | Your Profile</title>
+    <meta
+      name="description"
+      content="Manage your JustMarket profile, contact details, security settings, and sign-out status from one page."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Sora:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="topbar">
+        <a class="brand" href="./index.html" aria-label="Back to JustMarket">
+          <span class="brand-mark">JM</span>
+          <span class="brand-copy">
+            <strong>JustMarket</strong>
+            <span>Your profile and account settings</span>
+          </span>
+        </a>
+
+        <nav class="nav">
+          <a href="./index.html#marketplace">Marketplace</a>
+          <a href="./index.html#account">Account</a>
+          <a href="./index.html#sell">Sell</a>
+        </nav>
+
+        <div class="top-actions">
+          <span class="session-badge" id="profileSessionBadge">Profile</span>
+          <a class="button button-secondary" href="./index.html">Back to Marketplace</a>
+          <button class="button button-ghost" id="logoutBtn" type="button" hidden>Log Out</button>
+        </div>
+      </header>
+
+      <main class="profile-page">
+        <section class="section-head">
+          <div>
+            <p class="eyebrow">Profile</p>
+            <h2>See your account details, security settings, and sign-out controls on one page.</h2>
+          </div>
+          <p class="section-copy">
+            This page shows the information connected to your JustMarket account and lets you update your public details, email, and password.
+          </p>
+        </section>
+
+        <section class="panel profile-guest" id="guestState">
+          <div class="panel-head">
+            <h3>Sign in required</h3>
+          </div>
+          <p class="section-copy">
+            Open JustMarket, sign in with Google or email, then come back here to manage your profile and security settings.
+          </p>
+          <div class="hero-actions">
+            <a class="button" href="./index.html#account">Go to Sign In</a>
+            <a class="button button-secondary" href="./index.html">Back to Marketplace</a>
+          </div>
+        </section>
+
+        <div class="profile-layout" id="profileLayout" hidden>
+          <aside class="panel profile-summary">
+            <div>
+              <p class="eyebrow">Account overview</p>
+              <h3 id="profileName">JustMarket user</h3>
+              <p class="section-copy" id="profileSubtitle">Customer profile</p>
+            </div>
+
+            <div class="profile-summary-grid">
+              <article>
+                <span>Email</span>
+                <strong id="summaryEmail">-</strong>
+              </article>
+              <article>
+                <span>Role</span>
+                <strong id="summaryRole">-</strong>
+              </article>
+              <article>
+                <span>Location</span>
+                <strong id="summaryLocation">-</strong>
+              </article>
+              <article>
+                <span>Member since</span>
+                <strong id="summaryJoined">-</strong>
+              </article>
+            </div>
+          </aside>
+
+          <div class="profile-stack">
+            <section class="panel profile-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Personal details</p>
+                  <h3>Your information</h3>
+                </div>
+              </div>
+
+              <form class="auth-form" id="profileForm">
+                <label class="field">
+                  <span>Name</span>
+                  <input id="profileNameInput" name="name" type="text" placeholder="Your name" required />
+                </label>
+
+                <label class="field">
+                  <span>Location</span>
+                  <input id="profileLocationInput" name="location" type="text" placeholder="City or area" required />
+                </label>
+
+                <label class="field">
+                  <span>Account type</span>
+                  <input id="profileRoleInput" class="readonly-input" type="text" readonly />
+                </label>
+
+                <button class="button" type="submit">Save Profile</button>
+              </form>
+            </section>
+
+            <section class="panel profile-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Email</p>
+                  <h3>Contact email</h3>
+                </div>
+              </div>
+
+              <form class="auth-form" id="emailForm">
+                <label class="field">
+                  <span>Current email</span>
+                  <input id="currentEmailInput" class="readonly-input" type="email" readonly />
+                </label>
+
+                <label class="field">
+                  <span>New email</span>
+                  <input name="email" type="email" placeholder="new@email.com" required />
+                </label>
+
+                <p class="form-note">Email changes may require confirmation before they go live.</p>
+                <button class="button button-secondary" type="submit">Update Email</button>
+              </form>
+            </section>
+
+            <section class="panel profile-card">
+              <div class="panel-head">
+                <div>
+                  <p class="eyebrow">Security</p>
+                  <h3>Password and sign-in</h3>
+                </div>
+              </div>
+
+              <div class="security-meta">
+                <label class="field">
+                  <span>Sign-in method</span>
+                  <input id="providerInput" class="readonly-input" type="text" readonly />
+                </label>
+
+                <label class="field">
+                  <span>Password</span>
+                  <input class="readonly-input" type="text" value="Hidden for security" readonly />
+                </label>
+              </div>
+
+              <form class="auth-form" id="passwordForm">
+                <label class="field">
+                  <span>New password</span>
+                  <input name="password" type="password" placeholder="Minimum 6 characters" minlength="6" autocomplete="new-password" required />
+                </label>
+
+                <label class="field">
+                  <span>Confirm new password</span>
+                  <input
+                    name="confirmPassword"
+                    type="password"
+                    placeholder="Repeat your password"
+                    minlength="6"
+                    autocomplete="new-password"
+                    required
+                  />
+                </label>
+
+                <p class="form-note">If you signed in with Google, adding a password gives you an email-password fallback too.</p>
+                <button class="button" type="submit">Update Password</button>
+              </form>
+            </section>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <div class="toast" id="toast" aria-live="polite"></div>
+
+    <script type="module" src="./profile.js"></script>
+  </body>
+</html>
