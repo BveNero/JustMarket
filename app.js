@@ -1,5 +1,15 @@
-const TOKEN_KEY = "jm_session_token";
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const SUPABASE_URL = "https://fbukkqomytzoilxxvpef.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_YSGF9y8LHX6qeb-9J1aKwg_jrw4utyQ";
 const MAX_IMAGES = 4;
+const supabase = createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+  auth: {
+    autoRefreshToken: true,
+    persistSession: true,
+    detectSessionInUrl: true
+  }
+});
 
 const CATEGORY_OPTIONS = [
   "All",
@@ -136,21 +146,26 @@ void bootstrap();
 
 async function bootstrap() {
   try {
-    const payload = await apiFetch("/api/bootstrap");
+    const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+    throwIfError(sessionError, "Could not restore your session.");
 
-    if (!payload.currentUser && getToken()) {
-      setToken(null);
-    }
+    const authUser = sessionData.session?.user || null;
+    const [profiles, listings, favoriteIds, chats] = await Promise.all([
+      loadProfiles(),
+      loadListings(),
+      loadFavoriteIds(authUser?.id),
+      loadChats(authUser?.id)
+    ]);
 
-    state.currentUser = payload.currentUser;
-    state.users = payload.users || [];
-    state.listings = payload.listings || [];
-    state.favoriteIds = payload.favoriteIds || [];
-    state.chats = payload.chats || [];
-    state.marketStats = payload.marketStats || {
+    state.currentUser = authUser ? buildCurrentUser(authUser, profiles.find((profile) => profile.id === authUser.id) || null) : null;
+    state.users = profiles.map(mapProfile);
+    state.listings = listings.map(mapListing);
+    state.favoriteIds = favoriteIds;
+    state.chats = chats;
+    state.marketStats = {
       listingCount: state.listings.length,
       sellerCount: new Set(state.listings.map((listing) => listing.sellerId)).size,
-      chatCount: state.chats.length
+      chatCount: state.currentUser ? state.chats.length : 0
     };
 
     if (state.currentUser) {
@@ -164,7 +179,7 @@ async function bootstrap() {
 
     renderAll();
   } catch (error) {
-    toast(error instanceof Error ? error.message : "Could not connect to the server.");
+    toast(friendlyError(error, "Could not connect to JustMarket."));
   }
 }
 
@@ -427,7 +442,7 @@ function renderSessionState() {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   el.accountGreeting.textContent = `Welcome, ${user.name}`;
-  el.accountMeta.textContent = `${roleLabel(user.role)} in ${user.location}. Your account is now connected to the shared JustMarket database.`;
+  el.accountMeta.textContent = `${roleLabel(user.role)} in ${user.location}. Your account is now connected to the shared JustMarket marketplace on Supabase.`;
   el.savedCount.textContent = String(savedListings.length);
   el.myListingCount.textContent = String(myListings.length);
   el.threadCount.textContent = String(threads.length);
@@ -782,17 +797,30 @@ async function onRegister(event) {
   };
 
   try {
-    const data = await apiFetch("/api/register", {
-      method: "POST",
-      body: JSON.stringify(payload)
+    const { data, error } = await supabase.auth.signUp({
+      email: payload.email,
+      password: payload.password,
+      options: {
+        data: {
+          role: payload.role,
+          name: payload.name,
+          location: payload.location
+        }
+      }
     });
+    throwIfError(error, "Could not register.");
 
-    setToken(data.token);
     event.currentTarget.reset();
+
+    if (!data.session) {
+      toast("Account created. Check your email to confirm it, then log in.");
+      return;
+    }
+
     await bootstrap();
-    toast(`Account created for ${data.user.name}.`);
+    toast(`Account created for ${payload.name}.`);
   } catch (error) {
-    toast(error instanceof Error ? error.message : "Could not register.");
+    toast(friendlyError(error, "Could not register."));
   }
 }
 
@@ -806,33 +834,27 @@ async function onLogin(event) {
   };
 
   try {
-    const data = await apiFetch("/api/login", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+    const { data, error } = await supabase.auth.signInWithPassword(payload);
+    throwIfError(error, "Could not log in.");
 
-    setToken(data.token);
     event.currentTarget.reset();
     await bootstrap();
-    toast(`Logged in as ${data.user.name}.`);
+    toast(`Logged in as ${data.user.user_metadata?.name || data.user.email || "your account"}.`);
   } catch (error) {
-    toast(error instanceof Error ? error.message : "Could not log in.");
+    toast(friendlyError(error, "Could not log in."));
   }
 }
 
 async function onLogout() {
   try {
-    await apiFetch("/api/logout", { method: "POST" });
-  } catch {
-    // Ignore server-side logout errors and clear client session anyway.
+    const { error } = await supabase.auth.signOut();
+    throwIfError(error, "Could not log out.");
+  } catch (error) {
+    toast(friendlyError(error, "Could not log out."));
+    return;
   }
 
-  setToken(null);
-  state.currentUser = null;
-  state.favoriteIds = [];
-  state.chats = [];
-  state.selectedThreadId = null;
-  renderAll();
+  await bootstrap();
   toast("Logged out.");
 }
 
@@ -891,12 +913,23 @@ async function onPostListing(event) {
   };
 
   try {
-    const data = await apiFetch("/api/listings", {
-      method: "POST",
-      body: JSON.stringify(payload)
-    });
+    const { data, error } = await supabase
+      .from("listings")
+      .insert({
+        seller_id: state.currentUser.id,
+        title: payload.title,
+        category: payload.category,
+        condition: payload.condition,
+        price: payload.price,
+        location: payload.location,
+        description: payload.description,
+        images: sanitizeImages(payload.images)
+      })
+      .select("id")
+      .single();
+    throwIfError(error, "Could not publish listing.");
 
-    state.selectedListingId = data.listing.id;
+    state.selectedListingId = data.id;
     state.selectedImageIndex = 0;
     state.draftImages = [];
     if (el.imagesInput) el.imagesInput.value = "";
@@ -905,7 +938,7 @@ async function onPostListing(event) {
     await bootstrap();
     toast("Listing published.");
   } catch (error) {
-    toast(error instanceof Error ? error.message : "Could not publish listing.");
+    toast(friendlyError(error, "Could not publish listing."));
   }
 }
 
@@ -917,18 +950,36 @@ async function toggleFavorite(listingId) {
   }
 
   try {
-    const data = await apiFetch("/api/favorites/toggle", {
-      method: "POST",
-      body: JSON.stringify({ listingId })
-    });
+    const { data: existing, error: readError } = await supabase
+      .from("favorites")
+      .select("listing_id")
+      .eq("user_id", state.currentUser.id)
+      .eq("listing_id", listingId)
+      .maybeSingle();
+    throwIfError(readError, "Could not load saved ads.");
 
-    state.favoriteIds = data.favoriteIds || [];
-    renderStats();
-    renderSessionState();
-    renderListings();
-    toast(data.saved ? "Saved ad." : "Removed from saved ads.");
+    if (existing) {
+      const { error } = await supabase
+        .from("favorites")
+        .delete()
+        .eq("user_id", state.currentUser.id)
+        .eq("listing_id", listingId);
+      throwIfError(error, "Could not remove this saved ad.");
+      await bootstrap();
+      toast("Removed from saved ads.");
+      return;
+    }
+
+    const { error } = await supabase.from("favorites").insert({
+      user_id: state.currentUser.id,
+      listing_id: listingId
+    });
+    throwIfError(error, "Could not save this ad.");
+
+    await bootstrap();
+    toast("Saved ad.");
   } catch (error) {
-    toast(error instanceof Error ? error.message : "Could not update saved ads.");
+    toast(friendlyError(error, "Could not update saved ads."));
   }
 }
 
@@ -946,17 +997,37 @@ async function openChatForSelectedListing() {
   }
 
   try {
-    const data = await apiFetch("/api/chats/open", {
-      method: "POST",
-      body: JSON.stringify({ listingId: listing.id })
-    });
+    const { data: existing, error: existingError } = await supabase
+      .from("chats")
+      .select("id")
+      .eq("listing_id", listing.id)
+      .eq("buyer_id", state.currentUser.id)
+      .eq("seller_id", listing.sellerId)
+      .maybeSingle();
+    throwIfError(existingError, "Could not open chat.");
 
-    state.selectedThreadId = data.chatId;
+    let chatId = existing?.id || "";
+
+    if (!chatId) {
+      const { data, error } = await supabase
+        .from("chats")
+        .insert({
+          listing_id: listing.id,
+          buyer_id: state.currentUser.id,
+          seller_id: listing.sellerId
+        })
+        .select("id")
+        .single();
+      throwIfError(error, "Could not open chat.");
+      chatId = data.id;
+    }
+
+    state.selectedThreadId = chatId;
     await bootstrap();
     document.getElementById("account")?.scrollIntoView({ behavior: "smooth", block: "start" });
     toast("Chat opened.");
   } catch (error) {
-    toast(error instanceof Error ? error.message : "Could not open chat.");
+    toast(friendlyError(error, "Could not open chat."));
   }
 }
 
@@ -967,21 +1038,25 @@ async function onChatSubmit(event) {
   if (!state.currentUser || !state.selectedThreadId || !text) return;
 
   try {
-    await apiFetch(`/api/chats/${state.selectedThreadId}/messages`, {
-      method: "POST",
-      body: JSON.stringify({ text })
+    const { error } = await supabase.from("messages").insert({
+      chat_id: state.selectedThreadId,
+      sender_id: state.currentUser.id,
+      text
     });
+    throwIfError(error, "Could not send the message.");
 
     el.chatInput.value = "";
     await bootstrap();
   } catch (error) {
-    toast(error instanceof Error ? error.message : "Could not send the message.");
+    toast(friendlyError(error, "Could not send the message."));
   }
 }
 
 async function deleteListing(listingId) {
   try {
-    await apiFetch(`/api/listings/${listingId}`, { method: "DELETE" });
+    const { error } = await supabase.from("listings").delete().eq("id", listingId);
+    throwIfError(error, "Could not delete the listing.");
+
     if (state.selectedListingId === listingId) {
       state.selectedListingId = null;
       state.selectedImageIndex = 0;
@@ -989,7 +1064,7 @@ async function deleteListing(listingId) {
     await bootstrap();
     toast("Listing deleted.");
   } catch (error) {
-    toast(error instanceof Error ? error.message : "Could not delete the listing.");
+    toast(friendlyError(error, "Could not delete the listing."));
   }
 }
 
@@ -1175,41 +1250,156 @@ function toast(message) {
   toast._timeout = setTimeout(() => el.toast.classList.remove("show"), 2000);
 }
 
-function getToken() {
-  return localStorage.getItem(TOKEN_KEY) || "";
+async function loadProfiles() {
+  const { data, error } = await supabase
+    .from("profiles")
+    .select("id, role, name, location, created_at")
+    .order("created_at", { ascending: false });
+
+  throwIfError(error, "Could not load profiles.");
+  return data || [];
 }
 
-function setToken(token) {
-  if (token) {
-    localStorage.setItem(TOKEN_KEY, token);
-  } else {
-    localStorage.removeItem(TOKEN_KEY);
-  }
+async function loadListings() {
+  const { data, error } = await supabase
+    .from("listings")
+    .select("id, seller_id, title, category, condition, price, location, description, images, created_at")
+    .order("created_at", { ascending: false });
+
+  throwIfError(error, "Could not load listings.");
+  return data || [];
 }
 
-async function apiFetch(path, options = {}) {
-  const headers = new Headers(options.headers || {});
-  const token = getToken();
+async function loadFavoriteIds(userId) {
+  if (!userId) return [];
 
-  if (!headers.has("Content-Type") && options.body) {
-    headers.set("Content-Type", "application/json");
+  const { data, error } = await supabase
+    .from("favorites")
+    .select("listing_id")
+    .eq("user_id", userId);
+
+  throwIfError(error, "Could not load saved ads.");
+  return (data || []).map((row) => row.listing_id);
+}
+
+async function loadChats(userId) {
+  if (!userId) return [];
+
+  const { data: chats, error: chatsError } = await supabase
+    .from("chats")
+    .select("id, listing_id, buyer_id, seller_id, created_at, updated_at")
+    .or(`buyer_id.eq.${userId},seller_id.eq.${userId}`)
+    .order("updated_at", { ascending: false });
+
+  throwIfError(chatsError, "Could not load chats.");
+
+  if (!chats?.length) return [];
+
+  const chatIds = chats.map((chat) => chat.id);
+  const { data: messages, error: messagesError } = await supabase
+    .from("messages")
+    .select("id, chat_id, sender_id, text, created_at")
+    .in("chat_id", chatIds)
+    .order("created_at", { ascending: true });
+
+  throwIfError(messagesError, "Could not load chat messages.");
+
+  const messagesByChat = new Map();
+  (messages || []).forEach((message) => {
+    const current = messagesByChat.get(message.chat_id) || [];
+    current.push({
+      id: message.id,
+      senderId: message.sender_id,
+      text: message.text,
+      createdAt: message.created_at
+    });
+    messagesByChat.set(message.chat_id, current);
+  });
+
+  return chats.map((chat) => ({
+    id: chat.id,
+    listingId: chat.listing_id,
+    buyerId: chat.buyer_id,
+    sellerId: chat.seller_id,
+    createdAt: chat.created_at,
+    updatedAt: chat.updated_at,
+    messages: messagesByChat.get(chat.id) || []
+  }));
+}
+
+function buildCurrentUser(authUser, profile) {
+  const metadata = authUser.user_metadata || {};
+
+  return {
+    id: authUser.id,
+    role: profile?.role || metadata.role || "customer",
+    name: profile?.name || metadata.name || authUser.email?.split("@")[0] || "JustMarket user",
+    location: profile?.location || metadata.location || "Location pending",
+    email: authUser.email || ""
+  };
+}
+
+function mapProfile(profile) {
+  return {
+    id: profile.id,
+    role: profile.role,
+    name: profile.name,
+    location: profile.location
+  };
+}
+
+function mapListing(listing) {
+  return {
+    id: listing.id,
+    sellerId: listing.seller_id,
+    title: listing.title,
+    category: listing.category,
+    condition: listing.condition,
+    price: Number(listing.price) || 0,
+    location: listing.location,
+    description: listing.description,
+    images: sanitizeImages(listing.images),
+    createdAt: listing.created_at
+  };
+}
+
+function sanitizeImages(images) {
+  if (!Array.isArray(images)) return [];
+  return images.filter((image) => typeof image === "string" && image.startsWith("data:image/")).slice(0, MAX_IMAGES);
+}
+
+function throwIfError(error, fallbackMessage) {
+  if (!error) return;
+  throw new Error(error.message || fallbackMessage || "Request failed.");
+}
+
+function friendlyError(error, fallbackMessage = "Request failed.") {
+  const message = error instanceof Error ? error.message : String(error || "");
+
+  if (!message) return fallbackMessage;
+  if (message.includes("relation") && message.includes("does not exist")) {
+    return "Supabase setup is not finished yet. Run the SQL setup file in the Supabase SQL Editor first.";
   }
-  if (token) {
-    headers.set("Authorization", `Bearer ${token}`);
+  if (message.includes("Database error saving new user")) {
+    return "Account setup is incomplete. Run the Supabase SQL setup file, then try again.";
+  }
+  if (message.includes("Invalid login credentials")) {
+    return "Invalid email or password.";
+  }
+  if (message.includes("Email not confirmed")) {
+    return "Check your email and confirm your account before logging in.";
+  }
+  if (message.includes("User already registered")) {
+    return "That email is already registered.";
+  }
+  if (message.includes("duplicate key value")) {
+    return "That record already exists.";
+  }
+  if (message.includes("row-level security")) {
+    return "Permission denied. Finish the Supabase setup or log in again.";
   }
 
-  const response = await fetch(path, { ...options, headers });
-  const text = await response.text();
-  const payload = text ? JSON.parse(text) : {};
-
-  if (!response.ok) {
-    if (response.status === 401) {
-      setToken(null);
-    }
-    throw new Error(payload.error || "Request failed.");
-  }
-
-  return payload;
+  return message || fallbackMessage;
 }
 
 function escapeHtml(value) {

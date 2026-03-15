@@ -295,7 +295,7 @@
               <h2>Register, log in, manage your listings, and hold real chat conversations.</h2>
             </div>
             <p class="section-copy">
-              Accounts, listings, favorites, and chats are now stored in the shared JustMarket backend and database.
+              Accounts, listings, favorites, and chats are now stored in Supabase so the marketplace works across real users and devices.
             </p>
           </div>
 
@@ -357,8 +357,8 @@
                   <button class="button button-secondary" type="submit">Log In</button>
 
                   <div class="helper-card compact">
-                    <strong>No demo users</strong>
-                    <p>Register at least two accounts if you want to test buyer and seller chat from different sessions or devices.</p>
+                    <strong>Real shared accounts</strong>
+                    <p>JustMarket now uses Supabase for shared accounts, listings, saved ads, and live buyer-seller chat. If signup does not log you in right away, confirm the email first.</p>
                   </div>
                 </form>
               </div>
@@ -498,7 +498,7 @@
                   <input id="imagesInput" type="file" accept="image/*" multiple />
                 </label>
 
-                <div class="upload-note">Upload up to 4 images. They are stored with the listing in the shared JustMarket database.</div>
+                <div class="upload-note">Upload up to 4 images. They are compressed in the browser, then stored with the listing in Supabase.</div>
                 <div class="image-preview-grid" id="imagePreviewGrid"></div>
 
                 <button class="button" type="submit">Publish Listing</button>
@@ -512,6 +512,6 @@
 
     <div class="toast" id="toast" aria-live="polite"></div>
 
-    <script src="./app.js"></script>
+    <script type="module" src="./app.js"></script>
   </body>
 </html>
