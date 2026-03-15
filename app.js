@@ -90,10 +90,6 @@ const el = {
   sellerStats: document.getElementById("sellerStats"),
   favoriteBtn: document.getElementById("favoriteBtn"),
   contactSellerBtn: document.getElementById("contactSellerBtn"),
-  googleSignInBtn: document.getElementById("googleSignInBtn"),
-  appleSignInBtn: document.getElementById("appleSignInBtn"),
-  registerForm: document.getElementById("registerForm"),
-  loginForm: document.getElementById("loginForm"),
   authSection: document.getElementById("authSection"),
   dashboardSection: document.getElementById("dashboardSection"),
   dashboardProfileLink: document.getElementById("dashboardProfileLink"),
@@ -129,9 +125,6 @@ el.listingGrid?.addEventListener("click", onListingGridClick);
 el.detailThumbRow?.addEventListener("click", onThumbRowClick);
 el.favoriteBtn?.addEventListener("click", () => void toggleFavorite(state.selectedListingId));
 el.contactSellerBtn?.addEventListener("click", () => void openChatForSelectedListing());
-el.googleSignInBtn?.addEventListener("click", () => void onOAuthSignIn("google"));
-el.registerForm?.addEventListener("submit", onRegister);
-el.loginForm?.addEventListener("submit", onLogin);
 el.logoutBtn?.addEventListener("click", () => void onLogout());
 el.savedGrid?.addEventListener("click", onSavedGridClick);
 el.myListingsGrid?.addEventListener("click", onMyListingsClick);
@@ -778,85 +771,6 @@ function onOpenChatListing() {
   const listingId = el.openChatListingBtn.dataset.listingId;
   if (!listingId) return;
   openListing(listingId);
-}
-
-async function onRegister(event) {
-  event.preventDefault();
-  const formElement = event.currentTarget;
-  if (!(formElement instanceof HTMLFormElement)) return;
-
-  const form = new FormData(formElement);
-  const payload = {
-    role: String(form.get("role") || "").trim(),
-    name: String(form.get("name") || "").trim(),
-    email: String(form.get("email") || "").trim(),
-    password: String(form.get("password") || ""),
-    location: String(form.get("location") || "").trim()
-  };
-
-  try {
-    const { data, error } = await supabase.auth.signUp({
-      email: payload.email,
-      password: payload.password,
-      options: {
-        data: {
-          role: payload.role,
-          name: payload.name,
-          location: payload.location
-        }
-      }
-    });
-    throwIfError(error, "Could not register.");
-
-    formElement.reset();
-
-    if (!data.session) {
-      toast("Account created. Check your email to confirm it, then log in.");
-      return;
-    }
-
-    await bootstrap();
-    toast(`Account created for ${payload.name}.`);
-  } catch (error) {
-    toast(friendlyError(error, "Could not register."));
-  }
-}
-
-async function onLogin(event) {
-  event.preventDefault();
-  const formElement = event.currentTarget;
-  if (!(formElement instanceof HTMLFormElement)) return;
-
-  const form = new FormData(formElement);
-  const payload = {
-    email: String(form.get("email") || "").trim(),
-    password: String(form.get("password") || "")
-  };
-
-  try {
-    const { data, error } = await supabase.auth.signInWithPassword(payload);
-    throwIfError(error, "Could not log in.");
-
-    formElement.reset();
-    await bootstrap();
-    toast(`Logged in as ${data.user.user_metadata?.name || data.user.email || "your account"}.`);
-  } catch (error) {
-    toast(friendlyError(error, "Could not log in."));
-  }
-}
-
-async function onOAuthSignIn(provider) {
-  try {
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider,
-      options: {
-        redirectTo: `${window.location.origin}${window.location.pathname}`
-      }
-    });
-    throwIfError(error, `Could not start ${provider} sign in.`);
-  } catch (error) {
-    toast(friendlyError(error, `Could not start ${provider} sign in.`));
-  }
 }
 
 async function onLogout() {
