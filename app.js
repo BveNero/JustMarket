@@ -421,7 +421,7 @@ function renderSessionState() {
   }
 
   el.sessionBadge.textContent = user ? `${user.name} · ${roleLabel(user.role)}` : "Browse freely";
-  el.profileLink.hidden = !isLoggedIn;
+  el.profileLink.textContent = isLoggedIn ? "Profile" : "Sign In";
   el.dashboardProfileLink.hidden = !isLoggedIn;
   el.savedOnlyToggle.checked = state.filters.savedOnly;
   el.savedOnlyToggle.disabled = !isLoggedIn;
@@ -913,7 +913,7 @@ async function onPostListing(event) {
   if (!(formElement instanceof HTMLFormElement)) return;
 
   if (!state.currentUser) {
-    toast("Browsing is open. Sign in to post a listing.");
+    toast("Browsing is open. Sign in on your profile page to post a listing.");
     return;
   }
 
@@ -961,7 +961,7 @@ async function onPostListing(event) {
 async function toggleFavorite(listingId) {
   if (!listingId) return;
   if (!state.currentUser) {
-    toast("Browsing is open. Sign in to save ads.");
+    toast("Browsing is open. Sign in on your profile page to save ads.");
     return;
   }
 
@@ -1004,7 +1004,7 @@ async function openChatForSelectedListing() {
 
   if (!listing) return;
   if (!state.currentUser) {
-    toast("Browsing is open. Sign in to open a chat.");
+    toast("Browsing is open. Sign in on your profile page to open a chat.");
     return;
   }
   if (listing.sellerId === state.currentUser.id) {

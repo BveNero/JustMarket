@@ -44,22 +44,91 @@
         <section class="section-head">
           <div>
             <p class="eyebrow">Profile</p>
-            <h2>See your account details, security settings, and sign-out controls on one page.</h2>
+            <h2>Sign in here, then manage your account details, security settings, and logout in one place.</h2>
           </div>
           <p class="section-copy">
-            This page shows the information connected to your JustMarket account and lets you update your public details, email, and password.
+            Profile is now the home for Google sign-in, email login, registration, personal details, password updates, and sign-out.
           </p>
         </section>
 
-        <section class="panel profile-guest" id="guestState">
-          <div class="panel-head">
-            <h3>Sign in required</h3>
+        <section class="panel auth-panel" id="authSection">
+          <div class="oauth-stack">
+            <div class="helper-card compact oauth-intro">
+              <strong>Faster sign in</strong>
+              <p>Use Google right now to post ads, save listings, start chats, and access your profile. Apple sign-in is coming soon.</p>
+            </div>
+
+            <div class="oauth-actions">
+              <button class="button" id="googleSignInBtn" type="button">Continue with Google</button>
+              <button class="button button-secondary" id="appleSignInBtn" type="button" disabled>Apple Sign-In Coming Soon</button>
+            </div>
+
+            <p class="form-note">Email sign-up and email login stay available below as a fallback.</p>
           </div>
-          <p class="section-copy">
-            Open JustMarket, sign in with Google or email, then come back here to manage your profile and security settings.
-          </p>
+
+          <div class="auth-grid">
+            <form class="auth-form" id="registerForm">
+              <div class="panel-head">
+                <h3>Create account</h3>
+              </div>
+
+              <label class="field">
+                <span>Account type</span>
+                <select name="role" required>
+                  <option value="">Select one</option>
+                  <option value="company">Company</option>
+                  <option value="customer">Customer</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Name or company</span>
+                <input name="name" type="text" placeholder="West Village Rentals" required />
+              </label>
+
+              <label class="field">
+                <span>Email</span>
+                <input name="email" type="email" placeholder="you@example.com" required />
+              </label>
+
+              <label class="field">
+                <span>Password</span>
+                <input name="password" type="password" placeholder="Create password" minlength="6" required />
+              </label>
+
+              <label class="field">
+                <span>Location</span>
+                <input name="location" type="text" placeholder="Brooklyn, NY" required />
+              </label>
+
+              <button class="button" type="submit">Register</button>
+            </form>
+
+            <form class="auth-form" id="loginForm">
+              <div class="panel-head">
+                <h3>Log in</h3>
+              </div>
+
+              <label class="field">
+                <span>Email</span>
+                <input name="email" type="email" placeholder="you@example.com" required />
+              </label>
+
+              <label class="field">
+                <span>Password</span>
+                <input name="password" type="password" placeholder="Your password" required />
+              </label>
+
+              <button class="button button-secondary" type="submit">Log In</button>
+
+              <div class="helper-card compact">
+                <strong>Browse stays open</strong>
+                <p>You only need an account for posting ads, saving favorites, starting chats, and updating your profile.</p>
+              </div>
+            </form>
+          </div>
+
           <div class="hero-actions">
-            <a class="button" href="./index.html#account">Go to Sign In</a>
             <a class="button button-secondary" href="./index.html">Back to Marketplace</a>
           </div>
         </section>

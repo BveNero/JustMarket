@@ -16,10 +16,14 @@ const state = {
 };
 
 const el = {
-  guestState: document.getElementById("guestState"),
+  authSection: document.getElementById("authSection"),
   profileLayout: document.getElementById("profileLayout"),
   profileSessionBadge: document.getElementById("profileSessionBadge"),
   logoutBtn: document.getElementById("logoutBtn"),
+  googleSignInBtn: document.getElementById("googleSignInBtn"),
+  appleSignInBtn: document.getElementById("appleSignInBtn"),
+  registerForm: document.getElementById("registerForm"),
+  loginForm: document.getElementById("loginForm"),
   profileName: document.getElementById("profileName"),
   profileSubtitle: document.getElementById("profileSubtitle"),
   summaryEmail: document.getElementById("summaryEmail"),
@@ -38,6 +42,9 @@ const el = {
 };
 
 el.logoutBtn?.addEventListener("click", () => void onLogout());
+el.googleSignInBtn?.addEventListener("click", () => void onOAuthSignIn("google"));
+el.registerForm?.addEventListener("submit", onRegister);
+el.loginForm?.addEventListener("submit", onLogin);
 el.profileForm?.addEventListener("submit", onProfileSave);
 el.emailForm?.addEventListener("submit", onEmailSave);
 el.passwordForm?.addEventListener("submit", onPasswordSave);
@@ -62,6 +69,85 @@ async function bootstrap() {
   } catch (error) {
     renderGuest();
     toast(friendlyError(error, "Could not load your profile."));
+  }
+}
+
+async function onRegister(event) {
+  event.preventDefault();
+  const formElement = event.currentTarget;
+  if (!(formElement instanceof HTMLFormElement)) return;
+
+  const form = new FormData(formElement);
+  const payload = {
+    role: String(form.get("role") || "").trim(),
+    name: String(form.get("name") || "").trim(),
+    email: String(form.get("email") || "").trim().toLowerCase(),
+    password: String(form.get("password") || ""),
+    location: String(form.get("location") || "").trim()
+  };
+
+  try {
+    const { data, error } = await supabase.auth.signUp({
+      email: payload.email,
+      password: payload.password,
+      options: {
+        data: {
+          role: payload.role,
+          name: payload.name,
+          location: payload.location
+        }
+      }
+    });
+    throwIfError(error, "Could not register.");
+
+    formElement.reset();
+
+    if (!data.session) {
+      toast("Account created. Check your email to confirm it, then log in.");
+      return;
+    }
+
+    await bootstrap();
+    toast(`Account created for ${payload.name}.`);
+  } catch (error) {
+    toast(friendlyError(error, "Could not register."));
+  }
+}
+
+async function onLogin(event) {
+  event.preventDefault();
+  const formElement = event.currentTarget;
+  if (!(formElement instanceof HTMLFormElement)) return;
+
+  const form = new FormData(formElement);
+  const payload = {
+    email: String(form.get("email") || "").trim(),
+    password: String(form.get("password") || "")
+  };
+
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword(payload);
+    throwIfError(error, "Could not log in.");
+
+    formElement.reset();
+    await bootstrap();
+    toast(`Logged in as ${data.user.user_metadata?.name || data.user.email || "your account"}.`);
+  } catch (error) {
+    toast(friendlyError(error, "Could not log in."));
+  }
+}
+
+async function onOAuthSignIn(provider) {
+  try {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: {
+        redirectTo: `${window.location.origin}${window.location.pathname}`
+      }
+    });
+    throwIfError(error, `Could not start ${provider} sign in.`);
+  } catch (error) {
+    toast(friendlyError(error, `Could not start ${provider} sign in.`));
   }
 }
 
@@ -174,14 +260,16 @@ async function onLogout() {
     return;
   }
 
-  window.location.href = "./index.html";
+  state.currentUser = null;
+  renderGuest();
+  toast("Logged out.");
 }
 
 function renderGuest() {
-  el.guestState.hidden = false;
+  el.authSection.hidden = false;
   el.profileLayout.hidden = true;
   el.logoutBtn.hidden = true;
-  el.profileSessionBadge.textContent = "Profile";
+  el.profileSessionBadge.textContent = "Sign In";
 }
 
 function renderProfile() {
@@ -191,7 +279,7 @@ function renderProfile() {
     return;
   }
 
-  el.guestState.hidden = true;
+  el.authSection.hidden = true;
   el.profileLayout.hidden = false;
   el.logoutBtn.hidden = false;
   el.profileSessionBadge.textContent = `${user.name} · Profile`;
@@ -264,8 +352,26 @@ function friendlyError(error, fallbackMessage = "Request failed.") {
   if (message.includes("Auth session missing")) {
     return "Sign in again, then retry this action.";
   }
+  if (message.includes("Database error saving new user")) {
+    return "Account setup is incomplete. Run the Supabase SQL setup file, then try again.";
+  }
+  if (message.includes("Invalid login credentials")) {
+    return "Invalid email or password.";
+  }
+  if (message.includes("Email not confirmed")) {
+    return "Check your email and confirm your account before logging in.";
+  }
+  if (message.includes("User already registered")) {
+    return "That email is already registered.";
+  }
+  if (message.includes("provider is not enabled") || message.includes("Unsupported provider")) {
+    return "That sign-in option is not configured yet.";
+  }
   if (message.includes("Email rate limit exceeded")) {
     return "Too many email requests. Wait a little, then try again.";
+  }
+  if (message.includes("security purposes")) {
+    return "Email sign-in is rate-limited right now. Use Google instead.";
   }
   if (message.includes("same as the old password")) {
     return "Choose a new password that is different from the old one.";
