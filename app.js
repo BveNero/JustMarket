@@ -1252,6 +1252,7 @@ function bindButtonHover(buttons) {
     const resetGlow = () => {
       button.style.setProperty("--hover-x", "50%");
       button.style.setProperty("--hover-y", "50%");
+      button.style.setProperty("--hover-opacity", "0");
     };
 
     const updateGlow = (event) => {
@@ -1261,6 +1262,7 @@ function bindButtonHover(buttons) {
 
       button.style.setProperty("--hover-x", `${x}%`);
       button.style.setProperty("--hover-y", `${y}%`);
+      button.style.setProperty("--hover-opacity", "1");
     };
 
     resetGlow();

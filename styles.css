@@ -151,6 +151,7 @@ h4 {
 .button {
   --hover-x: 50%;
   --hover-y: 50%;
+  --hover-opacity: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -162,7 +163,12 @@ h4 {
   overflow: hidden;
   isolation: isolate;
   background:
-    radial-gradient(120px circle at var(--hover-x) var(--hover-y), rgba(24, 54, 126, 0.44) 0%, rgba(8, 24, 61, 0.28) 38%, transparent 72%),
+    radial-gradient(
+      120px circle at var(--hover-x) var(--hover-y),
+      rgb(24 54 126 / calc(var(--hover-opacity) * 0.44)) 0%,
+      rgb(8 24 61 / calc(var(--hover-opacity) * 0.28)) 38%,
+      transparent 72%
+    ),
     linear-gradient(135deg, var(--accent), #ffb16b);
   color: #06101a;
   font-weight: 800;
@@ -173,6 +179,7 @@ h4 {
 
 .button:hover,
 .button:focus-visible {
+  --hover-opacity: 1;
   transform: translateY(-1px);
   box-shadow: 0 18px 30px rgba(216, 93, 50, 0.24), 0 0 24px rgba(37, 79, 169, 0.24);
 }
@@ -180,7 +187,12 @@ h4 {
 .button-secondary,
 .button-ghost {
   background:
-    radial-gradient(120px circle at var(--hover-x) var(--hover-y), rgba(58, 107, 214, 0.3) 0%, rgba(10, 30, 71, 0.18) 42%, transparent 72%),
+    radial-gradient(
+      120px circle at var(--hover-x) var(--hover-y),
+      rgb(58 107 214 / calc(var(--hover-opacity) * 0.3)) 0%,
+      rgb(10 30 71 / calc(var(--hover-opacity) * 0.18)) 42%,
+      transparent 72%
+    ),
     rgba(255, 255, 255, 0.03);
   color: var(--ink);
   border: 1px solid var(--line);
@@ -191,6 +203,7 @@ h4 {
 .button-secondary:focus-visible,
 .button-ghost:hover,
 .button-ghost:focus-visible {
+  --hover-opacity: 1;
   box-shadow: 0 0 22px rgba(40, 82, 173, 0.18);
   border-color: rgba(124, 167, 255, 0.24);
 }
