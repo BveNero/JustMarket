@@ -195,6 +195,26 @@ h4 {
   border-color: rgba(124, 167, 255, 0.24);
 }
 
+.button:disabled,
+.button-secondary:disabled,
+.button-ghost:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.button:disabled:hover,
+.button:disabled:focus-visible,
+.button-secondary:disabled:hover,
+.button-secondary:disabled:focus-visible,
+.button-ghost:disabled:hover,
+.button-ghost:disabled:focus-visible {
+  transform: none;
+  box-shadow: none;
+  border-color: var(--line);
+}
+
 .mini-button {
   min-height: 38px;
   padding: 0 14px;

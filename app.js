@@ -133,7 +133,6 @@ el.detailThumbRow?.addEventListener("click", onThumbRowClick);
 el.favoriteBtn?.addEventListener("click", () => void toggleFavorite(state.selectedListingId));
 el.contactSellerBtn?.addEventListener("click", () => void openChatForSelectedListing());
 el.googleSignInBtn?.addEventListener("click", () => void onOAuthSignIn("google"));
-el.appleSignInBtn?.addEventListener("click", () => void onOAuthSignIn("apple"));
 el.registerForm?.addEventListener("submit", onRegister);
 el.loginForm?.addEventListener("submit", onLogin);
 el.logoutBtn?.addEventListener("click", () => void onLogout());
