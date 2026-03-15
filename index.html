@@ -30,13 +30,13 @@
         <nav class="nav">
           <a href="#marketplace">Marketplace</a>
           <a href="#howItWorks">How It Works</a>
-          <a href="#account">Account</a>
+          <a href="#account">Sell / Chat</a>
           <a href="#sell">Sell</a>
         </nav>
 
         <div class="top-actions">
-          <span class="session-badge" id="sessionBadge">Guest browsing</span>
-          <a class="button button-secondary" href="#account">Account</a>
+          <span class="session-badge" id="sessionBadge">Browse freely</span>
+          <a class="button button-secondary" href="#account">Sell / Chat</a>
           <a class="button" href="#sell">Post Ad</a>
         </div>
       </header>
@@ -53,7 +53,7 @@
 
             <div class="hero-actions">
               <a class="button" href="#marketplace">Start Browsing</a>
-              <a class="button button-secondary" href="#account">Create Account</a>
+              <a class="button button-secondary" href="#account">Sell or Chat</a>
             </div>
 
             <form class="hero-search" id="heroSearchForm">
@@ -254,7 +254,7 @@
 
                 <div class="detail-actions">
                   <button class="button" id="contactSellerBtn" type="button">Open Chat</button>
-                  <a class="button button-ghost" href="#account">Open Account</a>
+                  <a class="button button-ghost" href="#account">Sign In to Act</a>
                 </div>
               </div>
             </aside>
@@ -265,25 +265,25 @@
           <div class="section-head">
             <div>
               <p class="eyebrow">How it works</p>
-              <h2>Create accounts, post listings with images, and chat directly from the same page.</h2>
+              <h2>Browse freely, then sign in only when you want to post, save, or chat.</h2>
             </div>
           </div>
 
           <div class="workflow-grid">
             <article class="panel step-card">
               <span class="step-index">01</span>
-              <h3>Create accounts</h3>
-              <p>Register buyer and seller accounts with real names, emails, and locations stored in the shared marketplace database.</p>
+              <h3>Browse freely</h3>
+              <p>Anyone can open JustMarket, search listings, filter products, and inspect full listing details without creating an account.</p>
             </article>
             <article class="panel step-card">
               <span class="step-index">02</span>
-              <h3>Post ads with photos</h3>
-              <p>Sellers upload listing images, set price and condition, and publish ads into the marketplace feed.</p>
+              <h3>Sign in to act</h3>
+              <p>Create an account only when you want to post ads, save listings, or start a buyer-seller conversation.</p>
             </article>
             <article class="panel step-card">
               <span class="step-index">03</span>
               <h3>Save and chat</h3>
-              <p>Customers can save ads, open a chat from the listing detail, and both sides can reply from the account area.</p>
+              <p>Signed-in users can save ads, open chats from listings, and reply from the account area across devices.</p>
             </article>
           </div>
         </section>
@@ -291,8 +291,8 @@
         <section class="account-section" id="account">
           <div class="section-head">
             <div>
-              <p class="eyebrow">Account area</p>
-              <h2>Register, log in, manage your listings, and hold real chat conversations.</h2>
+              <p class="eyebrow">Optional account</p>
+              <h2>Browsing stays open. Sign in only to sell, save, and chat.</h2>
             </div>
             <p class="section-copy">
               Accounts, listings, favorites, and chats are now stored in Supabase so the marketplace works across real users and devices.
@@ -304,7 +304,7 @@
               <div class="auth-grid">
                 <form class="auth-form" id="registerForm">
                   <div class="panel-head">
-                    <h3>Create account</h3>
+                    <h3>Create account to act</h3>
                   </div>
 
                   <label class="field">
@@ -341,7 +341,7 @@
 
                 <form class="auth-form" id="loginForm">
                   <div class="panel-head">
-                    <h3>Log in</h3>
+                    <h3>Sign in to continue</h3>
                   </div>
 
                   <label class="field">
@@ -357,8 +357,8 @@
                   <button class="button button-secondary" type="submit">Log In</button>
 
                   <div class="helper-card compact">
-                    <strong>Real shared accounts</strong>
-                    <p>JustMarket now uses Supabase for shared accounts, listings, saved ads, and live buyer-seller chat. If signup does not log you in right away, confirm the email first.</p>
+                    <strong>Guest browsing stays open</strong>
+                    <p>You only need an account for posting ads, saving listings, and starting chats. Everyone else can browse freely.</p>
                   </div>
                 </form>
               </div>
@@ -444,8 +444,8 @@
 
             <div class="sell-column" id="sell">
               <div class="panel sell-locked" id="sellLocked">
-                <h3>Log in to post an ad</h3>
-                <p>Create an account first. Once logged in, the listing form opens here with image upload support.</p>
+                <h3>Sign in to post an ad</h3>
+                <p>Browsing is open to everyone. Sign in only when you want to publish a listing or reply to buyers.</p>
               </div>
 
               <form class="panel sell-form" id="postForm" hidden>

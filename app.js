@@ -420,7 +420,7 @@ function renderSessionState() {
     state.selectedThreadId = threads[0]?.id || null;
   }
 
-  el.sessionBadge.textContent = user ? `${user.name} · ${roleLabel(user.role)}` : "Guest browsing";
+  el.sessionBadge.textContent = user ? `${user.name} · ${roleLabel(user.role)}` : "Browse freely";
   el.savedOnlyToggle.checked = state.filters.savedOnly;
   el.savedOnlyToggle.disabled = !isLoggedIn;
   el.authSection.hidden = isLoggedIn;
@@ -442,7 +442,7 @@ function renderSessionState() {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   el.accountGreeting.textContent = `Welcome, ${user.name}`;
-  el.accountMeta.textContent = `${roleLabel(user.role)} in ${user.location}. Your account is now connected to the shared JustMarket marketplace on Supabase.`;
+  el.accountMeta.textContent = `${roleLabel(user.role)} in ${user.location}. Your account lets you post ads, save listings, and chat across the shared JustMarket marketplace.`;
   el.savedCount.textContent = String(savedListings.length);
   el.myListingCount.textContent = String(myListings.length);
   el.threadCount.textContent = String(threads.length);
@@ -903,7 +903,7 @@ async function onPostListing(event) {
   if (!(formElement instanceof HTMLFormElement)) return;
 
   if (!state.currentUser) {
-    toast("Log in first to post a listing.");
+    toast("Browsing is open. Sign in to post a listing.");
     return;
   }
 
@@ -951,7 +951,7 @@ async function onPostListing(event) {
 async function toggleFavorite(listingId) {
   if (!listingId) return;
   if (!state.currentUser) {
-    toast("Log in to save ads.");
+    toast("Browsing is open. Sign in to save ads.");
     return;
   }
 
@@ -994,7 +994,7 @@ async function openChatForSelectedListing() {
 
   if (!listing) return;
   if (!state.currentUser) {
-    toast("Log in to open a chat.");
+    toast("Browsing is open. Sign in to open a chat.");
     return;
   }
   if (listing.sellerId === state.currentUser.id) {
