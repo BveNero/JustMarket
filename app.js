@@ -59,9 +59,6 @@ const el = {
   chatTotal: document.getElementById("chatTotal"),
   sessionBadge: document.getElementById("sessionBadge"),
   profileLink: document.getElementById("profileLink"),
-  heroSearchForm: document.getElementById("heroSearchForm"),
-  heroSearchInput: document.getElementById("heroSearchInput"),
-  heroLocationSelect: document.getElementById("heroLocationSelect"),
   quickCategoryGrid: document.getElementById("quickCategoryGrid"),
   searchInput: document.getElementById("searchInput"),
   locationFilter: document.getElementById("locationFilter"),
@@ -114,7 +111,6 @@ const el = {
   toast: document.getElementById("toast")
 };
 
-el.heroSearchForm?.addEventListener("submit", onHeroSearch);
 el.quickCategoryGrid?.addEventListener("click", onQuickCategoryClick);
 el.searchInput?.addEventListener("input", onSearchInput);
 el.locationFilter?.addEventListener("change", onLocationChange);
@@ -213,12 +209,10 @@ function renderLocationOptions() {
   const options = locations.map((location) => `<option value="${escapeHtml(location)}">${escapeHtml(location)}</option>`).join("");
 
   el.locationFilter.innerHTML = options;
-  el.heroLocationSelect.innerHTML = options;
 
   if (!locations.includes(current)) state.filters.location = "All";
 
   el.locationFilter.value = state.filters.location;
-  el.heroLocationSelect.value = state.filters.location;
 }
 
 function renderCategoryChips() {
@@ -616,14 +610,6 @@ function ensureSelectedListing(listings) {
   }
 }
 
-function onHeroSearch(event) {
-  event.preventDefault();
-  state.filters.search = el.heroSearchInput.value.trim();
-  state.filters.location = el.heroLocationSelect.value || "All";
-  syncFilterInputs();
-  renderListings();
-}
-
 function onQuickCategoryClick(event) {
   const target = event.target;
   if (!(target instanceof HTMLElement)) return;
@@ -640,13 +626,11 @@ function onQuickCategoryClick(event) {
 
 function onSearchInput(event) {
   state.filters.search = event.target.value.trim();
-  el.heroSearchInput.value = state.filters.search;
   renderListings();
 }
 
 function onLocationChange(event) {
   state.filters.location = event.target.value || "All";
-  el.heroLocationSelect.value = state.filters.location;
   renderListings();
 }
 
@@ -685,9 +669,7 @@ function resetFilters() {
 
 function syncFilterInputs() {
   el.searchInput.value = state.filters.search;
-  el.heroSearchInput.value = state.filters.search;
   el.locationFilter.value = state.filters.location;
-  el.heroLocationSelect.value = state.filters.location;
   el.sortSelect.value = state.filters.sort;
   el.savedOnlyToggle.checked = state.filters.savedOnly;
 }

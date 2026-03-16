@@ -277,7 +277,6 @@ h1 {
   flex-wrap: wrap;
 }
 
-.hero-search,
 .hero-stats,
 .hero-callouts,
 .section-head,
@@ -305,11 +304,6 @@ h1 {
   flex-wrap: wrap;
 }
 
-.hero-search {
-  margin: 28px 0 14px;
-  align-items: end;
-}
-
 .hero-trust {
   display: flex;
   gap: 10px;
@@ -329,21 +323,11 @@ h1 {
   font-weight: 600;
 }
 
-.hero-search-field,
 .field {
   display: grid;
   gap: 8px;
 }
 
-.hero-search-field {
-  flex: 1;
-}
-
-.hero-search-wide {
-  flex: 1.5;
-}
-
-.hero-search-field span,
 .field span,
 .field-label,
 .seller-label {
@@ -1225,7 +1209,6 @@ textarea:focus {
 @media (max-width: 1180px) {
   .topbar,
   .hero-actions,
-  .hero-search,
   .section-head,
   .market-layout,
   .detail-actions,
